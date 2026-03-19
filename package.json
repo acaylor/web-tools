@@ -1,7 +1,7 @@
 {
   "name": "web-tools",
   "type": "module",
-  "version": "2024.10.22-7ca5933",
+  "version": "0.1.0",
   "packageManager": "pnpm@9.11.0",
   "description": "Collection of handy online tools for developers, with great UX.",
   "license": "GNU GPLv3",
@@ -108,7 +108,7 @@
     "@antfu/eslint-config": "^0.41.0",
     "@iconify-json/mdi": "^1.1.50",
     "@intlify/unplugin-vue-i18n": "^2.0.0",
-    "@playwright/test": "^1.32.3",
+    "@playwright/test": "^1.58.2",
     "@rushstack/eslint-patch": "^1.2.0",
     "@tsconfig/node18": "^18.2.0",
     "@types/bcryptjs": "^2.4.2",
