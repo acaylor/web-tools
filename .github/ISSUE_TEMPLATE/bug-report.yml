@@ -2,7 +2,7 @@ name: 🐞 Bug Report
 description: File a bug report.
 labels: ['bug', 'triage']
 assignees:
-  - CorentinTh
+  - acaylor
 body:
   - type: markdown
     attributes:
@@ -41,8 +41,7 @@ body:
     attributes:
       label: Where did you encounter the bug?
       options:
-        - Public app (it-tools.tech)
-        - A self hosted
+        - A self hosted instance
         - Other (installations, docker, etc.)
     validations:
       required: true

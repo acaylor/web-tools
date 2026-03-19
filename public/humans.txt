@@ -1,4 +1,7 @@
 /* TEAM */
-Developer: Corentin Thomasset
+Developer: acaylor
+Site: https://github.com/acaylor
+
+/* THANKS */
+Original project: Corentin Thomasset
 Site: https://github.com/CorentinTh
-Twitter: @cthmsst
