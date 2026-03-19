@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Version 0.1.0
+
+### Chores
+
+- **rebrand**: forked from [it-tools](https://github.com/CorentinTh/it-tools) and rebranded to web-tools
+- **ci**: upgraded to Node 22, pnpm 10, TypeScript 5.9, Playwright 1.58 for Ubuntu 24.04 support
+- **ci**: updated GitHub Actions to v4, fixed deprecated set-output syntax
+- **deps**: upgraded vue-tsc to v2, @vue/test-utils to v2.4, @playwright/test to v1.58
+
 ## Version 2024.10.22-7ca5933
 
 ### Features
