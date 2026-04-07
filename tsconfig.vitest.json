@@ -3,7 +3,7 @@
   "exclude": [],
   "compilerOptions": {
     "composite": true,
-    "lib": [],
+    "lib": ["ES2023"],
     "types": ["node", "jsdom", "unplugin-icons/types/vue"]
   }
 }
