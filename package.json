@@ -2,7 +2,7 @@
   "name": "web-tools",
   "type": "module",
   "version": "0.1.0",
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@11.5.0",
   "description": "Collection of handy online tools for developers, with great UX.",
   "license": "GNU GPLv3",
   "repository": {
@@ -103,11 +103,6 @@
     "xml-formatter": "^3.3.2",
     "xml-js": "^1.6.11",
     "yaml": "^2.2.1"
-  },
-  "pnpm": {
-    "overrides": {
-      "@unhead/vue>@vueuse/shared": "10.3.0"
-    }
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",

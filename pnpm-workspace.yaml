@@ -1,0 +1,9 @@
+packages:
+  - .
+
+allowBuilds:
+  esbuild: true
+  vue-demi: true
+
+overrides:
+  '@unhead/vue>@vueuse/shared': 10.3.0
