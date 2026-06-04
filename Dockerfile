@@ -4,7 +4,7 @@ FROM node:24-alpine AS build-stage
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV CI true
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN npm install -g pnpm && pnpm i --frozen-lockfile
 COPY . .
 RUN pnpm build
