@@ -165,7 +165,7 @@ function onSearchInput() {
       </div>
 
       <transition name="dropdown">
-        <div v-show="isOpen" class="c-select-dropdown" absolute z-10 mt-1 max-h-312px pretty-scrollbar w-full overflow-y-auto>
+        <div v-show="isOpen" class="c-select-dropdown" absolute z-10 mt-1 max-h-312px w-full overflow-y-auto pretty-scrollbar>
           <template v-if="!filteredOptions.length">
             <slot name="empty">
               <div px-4 py-1 opacity-70>
