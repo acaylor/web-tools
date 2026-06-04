@@ -94,6 +94,10 @@ export default defineConfig({
       dirs: ['src/'],
       extensions: ['vue', 'md'],
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+      // Skip the global TSX component declarations: page/layout/demo names
+      // (e.g. '404.page', 'Base.layout') are valid interface keys but invalid
+      // `const` identifiers, which breaks vue-tsc. No .tsx file relies on them.
+      dtsTsx: false,
       resolvers: [NaiveUiResolver(), IconsResolver({ prefix: 'icon' })],
     }),
     Unocss(),

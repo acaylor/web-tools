@@ -3,6 +3,7 @@ import { generateMeta } from '@it-tools/oggen';
 import _ from 'lodash';
 import { image, ogSchemas, twitter, website } from './og-schemas';
 import type { OGSchemaType, OGSchemaTypeElementSelect } from './OGSchemaType.type';
+import type { CSelectOption } from '@/ui/c-select/c-select.types';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 
 // Since type guards do not work in template
@@ -77,7 +78,7 @@ const metaTags = computed(() => {
           v-model:value="metadata[key]"
           w-full
           :placeholder="placeholder"
-          :options="(element as OGSchemaTypeElementSelect).options"
+          :options="(element as OGSchemaTypeElementSelect).options as unknown as CSelectOption<string>[]"
         />
       </n-input-group>
     </div>
