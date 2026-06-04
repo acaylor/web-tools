@@ -151,7 +151,7 @@ function onSearchInput() {
       >
         <div flex-1 truncate>
           <slot name="displayed-value">
-            <input v-if="searchable && isOpen" ref="searchInputRef" v-model="searchQuery" type="text" placeholder="Search..." class="search-input" w-full lh-normal color-current @input="onSearchInput">
+            <input v-if="searchable && isOpen" ref="searchInputRef" v-model="searchQuery" type="text" placeholder="Search..." class="search-input" w-full color-current lh-normal @input="onSearchInput">
             <span v-else-if="selectedOption" lh-normal>
               {{ selectedOption.label }}
             </span>
@@ -165,7 +165,7 @@ function onSearchInput() {
       </div>
 
       <transition name="dropdown">
-        <div v-show="isOpen" class="c-select-dropdown" absolute z-10 mt-1 max-h-312px w-full overflow-y-auto pretty-scrollbar>
+        <div v-show="isOpen" class="c-select-dropdown" absolute z-10 mt-1 max-h-312px pretty-scrollbar w-full overflow-y-auto>
           <template v-if="!filteredOptions.length">
             <slot name="empty">
               <div px-4 py-1 opacity-70>
