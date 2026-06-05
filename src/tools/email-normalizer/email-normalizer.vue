@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { normalizeEmail } from 'email-normalizer';
+import { normalizeEmail } from './email-normalizer';
 import { withDefaultOnError } from '@/utils/defaults';
 import { useCopy } from '@/composable/copy';
 

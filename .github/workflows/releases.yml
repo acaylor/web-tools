@@ -7,7 +7,7 @@ on:
 
 jobs:
   docker-release:
-    runs-on: ubuntu-latest
+    runs-on: web-tools
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
@@ -40,11 +40,16 @@ jobs:
             ghcr.io/acaylor/web-tools:${{ env.RELEASE_VERSION}}
 
   github-release:
-    runs-on: ubuntu-latest
+    runs-on: web-tools
+    container:
+      image: node:24-bookworm
     needs: docker-release
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Install zip
+        run: apt-get update && apt-get install -y zip
 
       - name: Checkout
         uses: actions/checkout@v5
