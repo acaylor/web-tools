@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: web-tools
 
     steps:
       - uses: actions/checkout@v5
