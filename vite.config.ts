@@ -10,11 +10,10 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Icons from 'unplugin-icons/vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
-import { defineConfig } from 'vite';
+import markdown from 'unplugin-vue-markdown/vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import markdown from 'vite-plugin-vue-markdown';
 import svgLoader from 'vite-svg-loader';
-import { configDefaults } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 const baseUrl = process.env.BASE_URL ?? '/';
 
@@ -56,6 +55,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       strategies: 'generateSW',
+      // vite-plugin-pwa 1.x throws by default when assets exceed the 2 MiB precache
+      // limit; warn instead (matching prior behavior) so the oversized lazy chunks
+      // (mac-address OUI database, Monaco editor.api) stay out of precache.
+      showMaximumFileSizeToCacheInBytesWarning: true,
       manifest: {
         name: 'IT Tools',
         description: 'Aggregated set of useful tools for developers.',
