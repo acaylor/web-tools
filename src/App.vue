@@ -16,7 +16,13 @@ const { locale } = useI18n();
 
 syncRef(
   locale,
-  useStorage('locale', locale),
+  useStorage('locale', locale.value),
+  {
+    transform: {
+      ltr: value => value,
+      rtl: value => value ?? locale.value,
+    },
+  },
 );
 </script>
 
