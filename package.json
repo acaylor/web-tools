@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@it-tools/bip39": "^0.0.4",
-    "@it-tools/oggen": "^1.3.0",
     "@regexper/render": "^1.0.0",
     "@sindresorhus/slugify": "^2.2.1",
     "@tabler/icons-vue": "^3.20.0",
@@ -64,7 +63,6 @@
     "email-normalizer": "^1.0.0",
     "emojilib": "^3.0.10",
     "figlet": "^1.7.0",
-    "figue": "^1.2.0",
     "fuse.js": "^6.6.2",
     "highlight.js": "^11.7.0",
     "iarna-toml-esm": "^3.0.5",

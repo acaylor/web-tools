@@ -1,4 +1,4 @@
-import { figue } from 'figue';
+import { figue } from '@/lib/figue';
 
 export const config = figue({
   app: {
