@@ -9,6 +9,8 @@ on:
 jobs:
   ci:
     runs-on: web-tools
+    container:
+      image: node:24-bookworm
 
     steps:
       - uses: actions/checkout@v5
