@@ -83,9 +83,6 @@ importers:
       dompurify:
         specifier: ^3.0.6
         version: 3.0.6
-      email-normalizer:
-        specifier: ^1.0.0
-        version: 1.0.0
       emojilib:
         specifier: ^3.0.10
         version: 3.0.10
@@ -3280,9 +3277,6 @@ packages:
 
   electron-to-chromium@1.5.364:
     resolution: {integrity: sha512-G/dYE3+AYhyHwzTwg8UbnXf7zqMERYh7l2jJ3QujhFsH8agSYwtnGAR2aZ7f0AakIKJXd5En/Hre4igIUrdlYw==}
-
-  email-normalizer@1.0.0:
-    resolution: {integrity: sha512-wZYuuMtL4kUOmg/TPtCrf9hAZjbFq+FcjWA85Z5nr2lGllRnWJPxCJw3gy4Cx+adMoyVw4VJfGGvt/OHgIW+qg==}
 
   emitter-component@1.1.1:
     resolution: {integrity: sha512-G+mpdiAySMuB7kesVRLuyvYRqDmshB7ReKEVuyBPkzQlmiDiLrt7hHHIy4Aff552bgknVN7B2/d3lzhGO5dvpQ==}
@@ -9258,10 +9252,6 @@ snapshots:
       jake: 10.8.7
 
   electron-to-chromium@1.5.364: {}
-
-  email-normalizer@1.0.0:
-    dependencies:
-      typescript: 5.9.3
 
   emitter-component@1.1.1: {}
 
