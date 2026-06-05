@@ -7,7 +7,7 @@ on:
 
 jobs:
   check_date:
-    runs-on: ubuntu-latest
+    runs-on: web-tools
     name: Check latest commit
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
@@ -23,7 +23,7 @@ jobs:
         run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) && echo "should_run=false" >> $GITHUB_OUTPUT
 
   ci:
-    runs-on: ubuntu-latest
+    runs-on: web-tools
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
 
@@ -48,7 +48,7 @@ jobs:
         run: pnpm build
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: web-tools
     needs:
       - ci
 
