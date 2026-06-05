@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { generateMeta } from '@it-tools/oggen';
+import { generateMeta } from './oggen';
 import _ from 'lodash';
 import { image, ogSchemas, twitter, website } from './og-schemas';
 import type { OGSchemaType, OGSchemaTypeElementSelect } from './OGSchemaType.type';

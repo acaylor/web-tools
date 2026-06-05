@@ -14,9 +14,6 @@ importers:
       '@it-tools/bip39':
         specifier: ^0.0.4
         version: 0.0.4
-      '@it-tools/oggen':
-        specifier: ^1.3.0
-        version: 1.3.0
       '@regexper/render':
         specifier: ^1.0.0
         version: 1.0.0
@@ -95,9 +92,6 @@ importers:
       figlet:
         specifier: ^1.7.0
         version: 1.7.0
-      figue:
-        specifier: ^1.2.0
-        version: 1.2.0
       fuse.js:
         specifier: ^6.6.2
         version: 6.6.2
@@ -1569,9 +1563,6 @@ packages:
 
   '@it-tools/bip39@0.0.4':
     resolution: {integrity: sha512-0PWO7VKi6VALiFcm8z2WgxzSZ5wAko0OctBZ0I5+jjtSIXm3t1d54yrrHfgFOZDTyMpCXi638oLpzqexcfRtbA==}
-
-  '@it-tools/oggen@1.3.0':
-    resolution: {integrity: sha512-hvPn0mDkbJvA6jDxV3Xw+MIermq+QyrQpUq86KkZXaWLfCIDnLVp3hBmdxpxU4NIckXj5/7eeVg5CvW0kpQBTw==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -3687,9 +3678,6 @@ packages:
     resolution: {integrity: sha512-gO8l3wvqo0V7wEFLXPbkX83b7MVjRrk1oRLfYlZXol8nEpb/ON9pcKLI4qpBv5YtOTfrINtqb7b40iYY2FTWFg==}
     engines: {node: '>= 0.4.0'}
     hasBin: true
-
-  figue@1.2.0:
-    resolution: {integrity: sha512-CXKr12kiNWjKtUK3X+YHeXKepn80s9Rg6pgZXoLQYEybgwaGJ9uGW4DrBrVK30ZWZf1mcvTbXF56AcovG7gLVw==}
 
   file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
@@ -7433,8 +7421,6 @@ snapshots:
       js-sha256: 0.9.0
       nanoid: 3.3.6
 
-  '@it-tools/oggen@1.3.0': {}
-
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -9831,10 +9817,6 @@ snapshots:
       web-streams-polyfill: 3.2.1
 
   figlet@1.7.0: {}
-
-  figue@1.2.0:
-    dependencies:
-      lodash: 4.17.21
 
   file-entry-cache@8.0.0:
     dependencies:
