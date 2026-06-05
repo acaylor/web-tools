@@ -11,9 +11,6 @@ importers:
 
   .:
     dependencies:
-      '@it-tools/bip39':
-        specifier: ^0.0.4
-        version: 0.0.4
       '@regexper/render':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1557,9 +1554,6 @@ packages:
   '@isaacs/cliui@9.0.0':
     resolution: {integrity: sha512-AokJm4tuBHillT+FpMtxQ60n8ObyXBatq7jD2/JA9dxbDDokKQm8KMht5ibGzLVU9IJDIKK4TPKgMHEYMn3lMg==}
     engines: {node: '>=18'}
-
-  '@it-tools/bip39@0.0.4':
-    resolution: {integrity: sha512-0PWO7VKi6VALiFcm8z2WgxzSZ5wAko0OctBZ0I5+jjtSIXm3t1d54yrrHfgFOZDTyMpCXi638oLpzqexcfRtbA==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -4213,9 +4207,6 @@ packages:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
     engines: {node: '>=14'}
 
-  js-sha256@0.9.0:
-    resolution: {integrity: sha512-sga3MHh9sgQN2+pJ9VYZ+1LPwXOxuBJBA5nrR5/ofPfuiJBE2hnjsaN8se8JznOmGLN2p49Pe5U/ttafcs/apA==}
-
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -4645,11 +4636,6 @@ packages:
 
   nanoid@3.3.12:
     resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
-  nanoid@3.3.6:
-    resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -7409,11 +7395,6 @@ snapshots:
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
   '@isaacs/cliui@9.0.0': {}
-
-  '@it-tools/bip39@0.0.4':
-    dependencies:
-      js-sha256: 0.9.0
-      nanoid: 3.3.6
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -10346,8 +10327,6 @@ snapshots:
 
   js-cookie@3.0.5: {}
 
-  js-sha256@0.9.0: {}
-
   js-tokens@4.0.0: {}
 
   js-tokens@9.0.1: {}
@@ -11018,8 +10997,6 @@ snapshots:
       vueuc: 0.4.51(vue@3.3.4)
 
   nanoid@3.3.12: {}
-
-  nanoid@3.3.6: {}
 
   nanoid@3.3.8: {}
 
