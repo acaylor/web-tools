@@ -39,10 +39,10 @@ test.describe('App shell', () => {
     expect(errors, errors.join('\n')).toEqual([]);
   });
 
-  test('Locale storage gets written on boot without throwing (useStorage + syncRef)', async ({ page }) => {
-    // The App.vue change passes `locale.value` to useStorage (instead of a ref)
-    // and wires a syncRef transform with an rtl-null fallback. The smoke this
-    // covers: app boots without throwing, and the storage key is populated.
+  test('Locale persists across reload (useStorage + i18n init)', async ({ page }) => {
+    // Regression check for App.vue: on boot, the i18n locale must be
+    // initialized from localStorage. The previous syncRef-based wiring would
+    // clobber the saved value with the i18n default on every reload.
     const errors: string[] = [];
     page.on('pageerror', err => errors.push(err.message));
     page.on('console', (msg) => {
@@ -52,10 +52,14 @@ test.describe('App shell', () => {
     });
 
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 3 }).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'All the tools' })).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('locale'))).toBe('en');
 
-    const stored = await page.evaluate(() => localStorage.getItem('locale'));
-    expect(stored).toBe('en');
+    await page.evaluate(() => localStorage.setItem('locale', 'de'));
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'Alle Tools' })).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('locale'))).toBe('de');
+
     expect(errors, errors.join('\n')).toEqual([]);
   });
 });
