@@ -12,12 +12,7 @@ const styleStore = useStyleStore();
 const theme = computed(() => (styleStore.isDarkTheme ? darkTheme : null));
 const themeOverrides = computed(() => (styleStore.isDarkTheme ? darkThemeOverrides : lightThemeOverrides));
 
-const { locale } = useI18n();
-
-syncRef(
-  locale,
-  useStorage('locale', locale),
-);
+// Locale persistence is handled by the i18n plugin (i18n.plugin.ts).
 </script>
 
 <template>

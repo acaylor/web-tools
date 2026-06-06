@@ -17,7 +17,7 @@ const rawJsonValidation = useValidation({
   source: rawJson,
   rules: [
     {
-      validator: v => v === '' || JSON5.parse(v),
+      validator: v => (v ?? '') === '' || JSON5.parse(v ?? ''),
       message: 'Provided JSON is not valid.',
     },
   ],
