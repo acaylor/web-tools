@@ -9,7 +9,7 @@ jobs:
     timeout-minutes: 20
     runs-on: web-tools
     container:
-      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
       options: --shm-size=1gb --ipc=host --cap-add=SYS_ADMIN
     env:
       HOME: /root
