@@ -34,6 +34,11 @@ declare module 'unicode-emoji-json' {
   export default emoji;
 }
 
+declare module 'figlet/importable-fonts/*' {
+  const fontData: string;
+  export default fontData;
+}
+
 declare module 'pdf-signature-reader' {
   const verifySignature: (pdf: ArrayBuffer) => ({signatures: SignatureInfo[]});
 
