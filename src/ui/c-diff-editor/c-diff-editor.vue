@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import { useStyleStore } from '@/stores/style.store';
 
 const props = withDefaults(defineProps<{ options?: monaco.editor.IDiffEditorOptions }>(), { options: () => ({}) });
 const { options } = toRefs(props);
+
+// The diff editor only renders plain-text models, so we import the core editor
+// API (no language contributions) and wire up just the base editor worker.
+// This avoids bundling monaco's ts/css/html/json language workers (~9 MB of
+// chunks), which the tool never uses. See issue #39 follow-up / CI build trim.
+(globalThis as typeof globalThis & { MonacoEnvironment: monaco.Environment }).MonacoEnvironment = {
+  getWorker: () => new EditorWorker(),
+};
 
 const editorContainer = ref<HTMLElement | null>(null);
 let editor: monaco.editor.IStandaloneDiffEditor | null = null;
