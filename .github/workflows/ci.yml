@@ -32,5 +32,7 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
-      - name: Build the app
-        run: pnpm build
+      # The production build is validated by the e2e workflow, which builds the
+      # app in each shard before running Playwright (same triggers: PR + push to
+      # main). Keeping it out of `ci` keeps this job a fast lint/unit/typecheck
+      # gate; a build break still fails the e2e jobs on every PR.
