@@ -34,6 +34,14 @@ declare module 'unicode-emoji-json' {
   export default emoji;
 }
 
+// We import monaco's core editor API from its deep ESM path to avoid bundling
+// the language workers. monaco's `exports` map ("./*": "./*") has no extension,
+// so TS can't resolve the .d.ts; the type surface is identical to the package
+// entry, so re-export it.
+declare module 'monaco-editor/esm/vs/editor/editor.api' {
+  export * from 'monaco-editor';
+}
+
 declare module 'pdf-signature-reader' {
   const verifySignature: (pdf: ArrayBuffer) => ({signatures: SignatureInfo[]});
 
