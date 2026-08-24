@@ -34,6 +34,11 @@ declare module 'unicode-emoji-json' {
   export default emoji;
 }
 
+declare module 'figlet/importable-fonts/*' {
+  const fontData: string;
+  export default fontData;
+}
+
 // We import monaco's core editor API from its deep ESM path to avoid bundling
 // the language workers. monaco's `exports` map ("./*": "./*") has no extension,
 // so TS can't resolve the .d.ts; the type surface is identical to the package

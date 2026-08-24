@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import figlet from 'figlet';
+import { figletFontImporters } from './figlet-fonts';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 
 const input = ref('Ascii ART');
@@ -9,25 +10,49 @@ const output = ref('');
 const errored = ref(false);
 const processing = ref(false);
 
-figlet.defaults({ fontPath: '//unpkg.com/figlet@1.6.0/fonts/' });
+const parsedFonts = new Set<string>();
+
+// Fonts are bundled with the app (via figlet/importable-fonts) and parsed on
+// demand, instead of being fetched from a third-party CDN at runtime. See #39.
+async function ensureFontLoaded(name: string) {
+  if (parsedFonts.has(name)) {
+    return;
+  }
+
+  const importer = figletFontImporters[name];
+  if (!importer) {
+    throw new Error(`Unknown figlet font: ${name}`);
+  }
+
+  const { default: fontData } = await importer();
+  figlet.parseFont(name, fontData);
+  parsedFonts.add(name);
+}
 
 watchEffect(async () => {
+  // Read reactive deps synchronously so the effect tracks them across the await.
+  const text = input.value;
+  const fontName = font.value;
+  const maxWidth = width.value;
+
   processing.value = true;
   try {
+    await ensureFontLoaded(fontName);
+
     const options: figlet.Options = {
-      font: font.value as figlet.Fonts,
-      width: width.value,
+      font: fontName as figlet.Fonts,
+      width: maxWidth,
       whitespaceBreak: true,
     };
     output.value = await (new Promise<string>((resolve, reject) =>
-      figlet.text(input.value, options,
-        (err, text) => {
+      figlet.text(text, options,
+        (err, result) => {
           if (err) {
             reject(err);
             return;
           }
 
-          resolve(text ?? '');
+          resolve(result ?? '');
         })));
     errored.value = false;
   }

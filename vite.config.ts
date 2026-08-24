@@ -59,6 +59,24 @@ export default defineConfig({
       // limit; warn instead (matching prior behavior) so the oversized lazy chunks
       // (mac-address OUI database, Monaco editor.api) stay out of precache.
       showMaximumFileSizeToCacheInBytesWarning: true,
+      workbox: {
+        // The figlet fonts (assets/figlet-fonts/*) are loaded on demand, so keep
+        // them out of the precache — otherwise the SW would eagerly download the
+        // whole font set (~480 KB gzip) on install for every user. Cache them at
+        // runtime on first use instead, so they stay available offline. See #39.
+        globIgnores: ['**/figlet-fonts/**'],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/assets/figlet-fonts/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'figlet-fonts',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'IT Tools',
         description: 'Aggregated set of useful tools for developers.',
@@ -119,5 +137,17 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    rollupOptions: {
+      output: {
+        // Emit the figlet font chunks into their own directory so the PWA can
+        // keep them out of the precache (they are loaded on demand). See #39.
+        chunkFileNames(chunkInfo) {
+          if (chunkInfo.facadeModuleId?.includes('figlet/importable-fonts/')) {
+            return 'assets/figlet-fonts/[name]-[hash].js';
+          }
+          return 'assets/[name]-[hash].js';
+        },
+      },
+    },
   },
 });
