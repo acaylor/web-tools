@@ -1,6 +1,50 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. Releases use semantic versioning (`major.minor.patch`); unreleased changes are collected below. See [the release workflow](README.md#releases) for versioning and publishing instructions. Historical date-based releases retain their original version names.
+
+## Unreleased
+
+### Features
+
+- **case-converter**: preserve digits during case conversion with change-case v5 (8e9864d)
+
+### Bug fixes
+
+- **i18n**: restore the saved language at startup and persist language changes across reloads (d7fbc0b)
+- **date-time-converter**: use `new Date()` to parse millisecond timestamps with date-fns v4 (846fa78)
+- **docker**: include `pnpm-workspace.yaml` in image builds so dependency installation uses the workspace configuration (de936ad)
+- **typecheck**: restore ES2023 library definitions in the Vitest configuration and resolve component typing regressions after upgrading unplugin-vue-components (e81e7e7, a64bced)
+
+### Performance
+
+- **text-diff**: load only Monaco's core editor and configure its base worker, removing unused language workers from the build (a9afa28)
+
+### Refactoring
+
+- **deps**: replace unmaintained figue, @it-tools/oggen, email-normalizer, and @it-tools/bip39 packages with local TypeScript implementations (14a5bc7, fdf89b3, 2ea5c8a)
+- **formatters**: adapt Markdown link rendering, SQL formatting, and WYSIWYG HTML formatting to the upgraded library APIs (70c4082, cfda7c5)
+
+### Tests
+
+- **unit**: cover the local configuration parser, meta tag generator, email normalizer, and BIP39 implementation (71d6fd0)
+- **e2e**: expand coverage for navigation, language persistence, validation, QR codes, RSA keys, identifiers, security tools, formatters, search, and the diff editor (d7fbc0b, c24697e, 70c4082, 8e9864d, 846fa78)
+
+### Continuous integration
+
+- **runners**: move workflows to the self-hosted web-tools runner, using Node 24 containers for Node jobs and a Playwright container for browser tests (885263b, 08f4076, 8532757)
+- **e2e**: run three workers per shard, cache the pnpm store, and increase CI test and assertion timeouts for parallel runs (7c87511, c0c9dd1)
+- **ci**: use frozen lockfile installs and remove the duplicate production build from the lint, unit test, and typecheck job; browser test jobs continue to validate the build (7c87511, 0bec30d)
+
+### Chores
+
+- **release**: switch to explicit semantic versions, prepare release commits through pull requests, and validate versioned changelog entries before publishing
+- **deps**: upgrade pnpm to 12.9.1, refresh compatible runtime and development dependencies, update Playwright to 1.63 and its CI image, and override Monaco's DOMPurify dependency (76ecd10)
+- **runtime**: upgrade to Node 24 LTS and pnpm 11, moving pnpm settings into `pnpm-workspace.yaml` (65149e1, 885263b)
+- **tooling**: upgrade to TypeScript 6, Vite 7, Vitest 4, ESLint 10 with flat configuration, UnoCSS 66, and newer unplugin integrations (e82ba96, 30f9961, cfda7c5, d7fbc0b)
+- **vue**: upgrade Vue to 3.5, Vue Router to 5, Pinia to 3, VueUse to 14, vue-i18n to 11, and vue-tsc to 3 (cfda7c5, d7fbc0b)
+- **deps**: upgrade identifier, authentication, security, date, text, search, Markdown, math, formatting, UI, and data libraries; refresh MAC vendor and emoji data and remove redundant type packages (c24697e, 70c4082, 8e9864d, 846fa78, 347c3dd)
+- **deps**: update Playwright to 1.60 and its CI image, refresh GitHub Actions, and consolidate compatible Renovate lockfile updates (885263b, 70c4082, d0953c1)
+- **renovate**: enable dependency processing for the fork (2ff1774)
 
 ## Version 0.1.0
 

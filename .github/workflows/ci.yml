@@ -29,6 +29,9 @@ jobs:
       - name: Run unit test
         run: pnpm test
 
+      - name: Test release workflow
+        run: pnpm test:release
+
       - name: Type check
         run: pnpm typecheck
 
