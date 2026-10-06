@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. Releases us
 
 ## Unreleased
 
+## Version 0.2.0
+
 ### Features
 
 - **case-converter**: preserve digits during case conversion with change-case v5 (8e9864d)

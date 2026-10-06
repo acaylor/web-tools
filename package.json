@@ -1,7 +1,7 @@
 {
   "name": "web-tools",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packageManager": "pnpm@12.9.1",
   "description": "Collection of handy online tools for developers, with great UX.",
   "license": "GNU GPLv3",
