@@ -1,7 +1,7 @@
 {
   "name": "web-tools",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packageManager": "pnpm@12.9.1",
   "description": "Collection of handy online tools for developers, with great UX.",
   "license": "GNU GPLv3",
@@ -26,6 +26,7 @@
     "preview": "vite preview --port 5050",
     "test": "pnpm run test:unit",
     "test:unit": "vitest --environment jsdom",
+    "test:release": "node --test scripts/release.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:dev": "BASE_URL=http://localhost:5173 NO_WEB_SERVER=true playwright test",
     "coverage": "vitest run --coverage",

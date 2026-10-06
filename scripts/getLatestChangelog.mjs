@@ -1,6 +1,5 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
+import { getReleaseNotes } from './shared/changelog.mjs';
 
 const changelogContent = await readFile('./CHANGELOG.md', 'utf-8');
-const [, lastChangelog] = changelogContent.split(/^## .*$/gm);
-
-console.log(lastChangelog.trim());
+console.log(getReleaseNotes(changelogContent, process.argv[2]));
