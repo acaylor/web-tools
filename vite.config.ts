@@ -133,7 +133,8 @@ export default defineConfig({
     'import.meta.env.PACKAGE_VERSION': JSON.stringify(process.env.npm_package_version),
   },
   test: {
-    exclude: [...configDefaults.exclude, '**/*.e2e.spec.ts'],
+    // Release scripts use Node's test runner and temporary Git repositories.
+    exclude: [...configDefaults.exclude, '**/*.e2e.spec.ts', 'scripts/**'],
   },
   build: {
     target: 'esnext',

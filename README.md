@@ -79,6 +79,50 @@ This generates boilerplate in `src/tools/my-tool-name/` and adds the import to `
 }
 ```
 
+## Releases
+
+Releases use semantic versions: `major.minor.patch`, with Git tags such as `v0.2.0`. Use patch releases for compatible fixes and minor releases for new functionality or substantial maintenance updates. Once the project reaches 1.0, incompatible changes require a major release; while it is 0.x, use a new minor version for incompatible changes. Dependency major versions do not automatically determine the application version. The workflow currently supports stable releases only, without prerelease or build suffixes.
+
+Keep notable changes under `## Unreleased` in [CHANGELOG.md](CHANGELOG.md). Start from current main with a clean working tree and create a release branch. For example:
+
+```sh
+git switch main
+git pull --ff-only
+git fetch origin --tags
+git switch -c release/v0.2.0
+# Commit any edits to the Unreleased notes before running the release script.
+pnpm release 0.2.0 --dry-run
+pnpm release 0.2.0 --yes
+```
+
+The script promotes the curated Unreleased notes to `## Version 0.2.0`, leaves an empty Unreleased section for future changes, updates `package.json`, and creates one release commit. It rejects invalid or non-increasing versions, existing tags, missing notes, and uncommitted changes. It does not push or create a tag during preparation.
+
+Run the checks and open a pull request:
+
+```sh
+pnpm test:release
+pnpm lint
+pnpm typecheck
+pnpm test:unit --run
+pnpm build
+pnpm test:e2e
+git push -u origin release/v0.2.0
+gh pr create --base main --title "Release v0.2.0"
+```
+
+After the PR checks pass and the release PR is merged, create and push the tag from main:
+
+```sh
+git switch main
+git pull --ff-only
+git fetch origin --tags
+pnpm release 0.2.0 --tag --dry-run
+pnpm release 0.2.0 --tag --yes
+git push origin v0.2.0
+```
+
+Tagging checks that main matches the fetched `origin/main` and that the package version and release notes match the requested version. Pushing the tag starts the release workflow, which validates that version, publishes multi-platform Docker images tagged `0.2.0` and `latest`, and publishes a GitHub release with a ZIP of the built app and the matching changelog entry. Monitor the workflow with `gh run list --workflow releases.yml`. Use `pnpm release 0.2.0 --verify` to check release metadata without modifying files or Git history.
+
 ## Credits
 
 Forked from [it-tools](https://github.com/CorentinTh/it-tools) by [Corentin Thomasset](https://corentin.tech). Original project is no longer maintained.

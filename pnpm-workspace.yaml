@@ -7,3 +7,4 @@ allowBuilds:
 
 overrides:
   '@unhead/vue>@vueuse/shared': 10.3.0
+  'monaco-editor>dompurify': ^3.4.16

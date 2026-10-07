@@ -5,12 +5,36 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  validate:
+    runs-on: web-tools
+    container:
+      image: node:24-bookworm
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate semantic version and release notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: node scripts/release.mjs "${RELEASE_TAG#v}" --verify
+      - name: Test release workflow
+        run: node --test scripts/release.test.mjs
+
   docker-release:
+    needs: validate
+    permissions:
+      contents: read
+      packages: write
     runs-on: web-tools
     steps:
       - name: Get release version
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
 
       - name: Checkout
         uses: actions/checkout@v5
@@ -40,13 +64,15 @@ jobs:
             ghcr.io/acaylor/web-tools:${{ env.RELEASE_VERSION}}
 
   github-release:
+    permissions:
+      contents: write
     runs-on: web-tools
     container:
       image: node:24-bookworm
     needs: docker-release
     steps:
       - name: Get release version
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
 
       - name: Install zip
         run: apt-get update && apt-get install -y zip
@@ -54,7 +80,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - run: corepack enable
+      - uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v5
         with:
@@ -62,7 +88,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
 
       - name: Build the app
         run: pnpm build
@@ -74,9 +100,11 @@ jobs:
         id: changelog
         run: |
           EOF=$(openssl rand -hex 8)
-          echo "changelog<<$EOF" >> $GITHUB_OUTPUT
-          node ./scripts/getLatestChangelog.mjs >> $GITHUB_OUTPUT
-          echo "$EOF" >> $GITHUB_OUTPUT
+          {
+            echo "changelog<<$EOF"
+            node ./scripts/getLatestChangelog.mjs "$RELEASE_VERSION"
+            echo "$EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -84,7 +112,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: web-tools-${{ env.RELEASE_VERSION }}.zip
           tag_name: v${{ env.RELEASE_VERSION }}
-          draft: true
+          draft: false
           prerelease: false
           body: |
             ## Docker images
