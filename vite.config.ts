@@ -62,7 +62,7 @@ export default defineConfig({
       workbox: {
         // The figlet fonts (assets/figlet-fonts/*) are loaded on demand, so keep
         // them out of the precache — otherwise the SW would eagerly download the
-        // whole font set (~480 KB gzip) on install for every user. Cache them at
+        // whole font set (~1.2 MB gzip) on install for every user. Cache them at
         // runtime on first use instead, so they stay available offline. See #39.
         globIgnores: ['**/figlet-fonts/**'],
         runtimeCaching: [
@@ -71,7 +71,7 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'figlet-fonts',
-              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
