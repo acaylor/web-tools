@@ -1,42 +1,105 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
+import figlet from 'figlet';
+
+// Route interception doesn't see requests answered by a service worker, so keep
+// the PWA out of the way to make the network assertions below deterministic.
+test.use({ serviceWorkers: 'block' });
+
+const INPUT = 'Ascii ART';
+
+function render(font: string) {
+  return figlet.textSync(INPUT, { font, width: 80, whitespaceBreak: true });
+}
+
+function output(page: Page) {
+  return page.getByTestId('area-content');
+}
+
+async function selectFont(page: Page, font: string) {
+  const fontSelect = page.locator('div', { has: page.locator('label', { hasText: 'Font:' }) }).locator('.c-select').last();
+
+  await fontSelect.locator('.c-select-input').click();
+  await fontSelect.getByPlaceholder('Search...').fill(font);
+  await fontSelect.locator('.c-select-dropdown-option', { hasText: new RegExp(`^\\s*${font}\\s*$`) }).click();
+}
+
+async function expectArt(page: Page, font: string) {
+  await expect.poll(() => output(page).textContent()).toBe(render(font));
+}
 
 test.describe('Tool - ASCII text drawer', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/ascii-text-drawer');
-  });
-
   test('Has correct title', async ({ page }) => {
+    await page.goto('/ascii-text-drawer');
+
     await expect(page).toHaveTitle('ASCII Art Text Generator - IT Tools');
   });
 
-  test('Renders ASCII art for the default font (fonts are bundled, no CDN)', async ({ page }) => {
-    // The bug (#39): output never rendered because fonts were fetched from a
-    // third-party CDN at runtime. Fonts are now bundled, so output must appear.
-    await expect(page.getByText('Current settings resulted in error.')).toBeHidden();
+  test('Renders the default font with external requests blocked and no font download (#39)', async ({ page, baseURL }) => {
+    const origin = new URL(baseURL!).origin;
+    const fontRequests: string[] = [];
 
-    const output = page.getByTestId('area-content');
-    await expect(output).toBeVisible();
+    await page.route('**/*', route => route.request().url().startsWith(origin) ? route.continue() : route.abort());
+    page.on('request', (request) => {
+      if (request.url().includes('/figlet-fonts/')) {
+        fontRequests.push(request.url());
+      }
+    });
 
-    const art = (await output.innerText()).trim();
-    // figlet Standard art for "Ascii ART" is multi-line and contains slash/underscore glyphs
-    expect(art.split('\n').length).toBeGreaterThan(3);
-    expect(art).toMatch(/[/\\_|]/);
-    expect(art).not.toEqual('Ascii ART');
+    await page.goto('/ascii-text-drawer');
+
+    await expectArt(page, 'Standard');
+    expect(fontRequests).toEqual([]);
   });
 
-  test('Switching to another font loads it on demand and re-renders', async ({ page }) => {
-    const output = page.getByTestId('area-content');
-    const standardArt = (await output.innerText()).trim();
+  test('Loads another font on demand and re-renders', async ({ page }) => {
+    await page.goto('/ascii-text-drawer');
+    await expectArt(page, 'Standard');
 
-    // pick a visually distinct font via the searchable select
-    await page.getByPlaceholder('Select font to use').click();
-    await page.getByText('Banner3', { exact: true }).click();
+    await selectFont(page, 'Banner3');
 
-    await expect(page.getByText('Current settings resulted in error.')).toBeHidden();
-    await expect(async () => {
-      const bannerArt = (await output.innerText()).trim();
-      expect(bannerArt.length).toBeGreaterThan(10);
-      expect(bannerArt).not.toEqual(standardArt);
-    }).toPass();
+    await expectArt(page, 'Banner3');
+  });
+
+  test('A slow font that finishes late does not overwrite a newer selection', async ({ page }) => {
+    let releaseBanner3!: () => void;
+    const banner3Released = new Promise<void>(resolve => releaseBanner3 = resolve);
+    const banner3Served = page.waitForResponse(response => response.url().includes('/figlet-fonts/Banner3-'));
+
+    await page.route('**/figlet-fonts/Banner3-*.js', async (route) => {
+      await banner3Released;
+      await route.continue();
+    });
+
+    await page.goto('/ascii-text-drawer');
+    await expectArt(page, 'Standard');
+
+    await selectFont(page, 'Banner3');
+    await expect(page.getByText('Loading font...')).toBeVisible();
+    await selectFont(page, 'Slant');
+    await expectArt(page, 'Slant');
+
+    releaseBanner3();
+    await banner3Served;
+
+    await expect(page.getByText('Loading font...')).toBeHidden();
+    await expect(page.locator('.c-alert')).toBeHidden();
+    await expectArt(page, 'Slant');
+  });
+
+  test('Offline, already-downloaded fonts still render and others explain why they cannot', async ({ page, context }) => {
+    await page.goto('/ascii-text-drawer');
+    await selectFont(page, 'Banner3');
+    await expectArt(page, 'Banner3');
+
+    await context.setOffline(true);
+
+    await selectFont(page, 'Slant');
+    await expect(page.getByText('Could not download the "Slant" font.')).toBeVisible();
+
+    await selectFont(page, 'Banner3');
+    await expectArt(page, 'Banner3');
+
+    await selectFont(page, 'Standard');
+    await expectArt(page, 'Standard');
   });
 });
