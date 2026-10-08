@@ -1,44 +1,64 @@
 <script setup lang="ts">
 import figlet from 'figlet';
-import type { FigletOptions } from 'figlet';
+import { DEFAULT_FONT, FontLoadError, fontNames, isFontLoaded, loadFont } from './figlet-fonts';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 
 const input = ref('Ascii ART');
-const font = useStorage('ascii-text-drawer:font', 'Standard');
+const font = useStorage('ascii-text-drawer:font', DEFAULT_FONT);
 const width = useStorage('ascii-text-drawer:width', 80);
 const output = ref('');
-const errored = ref(false);
+const error = ref<string | null>(null);
+const downloadFailed = ref(false);
 const processing = ref(false);
 
-figlet.defaults({ fontPath: '//unpkg.com/figlet@1.6.0/fonts/' });
+function reloadPage() {
+  window.location.reload();
+}
 
-watchEffect(async () => {
-  processing.value = true;
+watchEffect(async (onCleanup) => {
+  // Read reactive deps synchronously so the effect tracks them across the await.
+  const text = input.value;
+  const fontName = font.value;
+  const maxWidth = width.value;
+
+  // A newer run supersedes this one: an older font that finishes downloading
+  // late must not overwrite the output, error or loading state.
+  let stale = false;
+  onCleanup(() => {
+    stale = true;
+  });
+
   try {
-    const options: FigletOptions = {
-      font: font.value,
-      width: width.value,
-      whitespaceBreak: true,
-    };
-    output.value = await (new Promise<string>((resolve, reject) =>
-      figlet.text(input.value, options,
-        (err, text) => {
-          if (err) {
-            reject(err);
-            return;
-          }
+    if (!isFontLoaded(fontName)) {
+      processing.value = true;
+      await loadFont(fontName);
+      if (stale) {
+        return;
+      }
+    }
 
-          resolve(text ?? '');
-        })));
-    errored.value = false;
+    output.value = figlet.textSync(text, { font: fontName, width: maxWidth, whitespaceBreak: true });
+    error.value = null;
+    downloadFailed.value = false;
   }
-  catch (e: any) {
-    errored.value = true;
+  catch (e) {
+    if (stale) {
+      return;
+    }
+
+    // Some browsers (e.g. Chromium) remember a failed dynamic import for the
+    // rest of the page's life, so a download can only be retried by reloading.
+    downloadFailed.value = e instanceof FontLoadError;
+    error.value = downloadFailed.value
+      ? `Could not download the "${fontName}" font. Fonts are downloaded on first use: check your connection and reload the page, or pick a font you have used before.`
+      : 'Current settings resulted in error.';
   }
-  processing.value = false;
+  finally {
+    if (!stale) {
+      processing.value = false;
+    }
+  }
 });
-
-const fonts = ['1Row', '3-D', '3D Diagonal', '3D-ASCII', '3x5', '4Max', '5 Line Oblique', 'AMC 3 Line', 'AMC 3 Liv1', 'AMC AAA01', 'AMC Neko', 'AMC Razor', 'AMC Razor2', 'AMC Slash', 'AMC Slider', 'AMC Thin', 'AMC Tubes', 'AMC Untitled', 'ANSI Shadow', 'ASCII New Roman', 'Acrobatic', 'Alligator', 'Alligator2', 'Alpha', 'Alphabet', 'Arrows', 'Avatar', 'B1FF', 'B1FF', 'Banner', 'Banner3-D', 'Banner3', 'Banner4', 'Barbwire', 'Basic', 'Bear', 'Bell', 'Benjamin', 'Big Chief', 'Big Money-ne', 'Big Money-nw', 'Big Money-se', 'Big Money-sw', 'Big', 'Bigfig', 'Binary', 'Block', 'Blocks', 'Bloody', 'Bolger', 'Braced', 'Bright', 'Broadway KB', 'Broadway', 'Bubble', 'Bulbhead', 'Caligraphy', 'Caligraphy2', 'Calvin S', 'Cards', 'Catwalk', 'Chiseled', 'Chunky', 'Coinstak', 'Cola', 'Colossal', 'Computer', 'Contessa', 'Contrast', 'Cosmike', 'Crawford', 'Crawford2', 'Crazy', 'Cricket', 'Cursive', 'Cyberlarge', 'Cybermedium', 'Cybersmall', 'Cygnet', 'DANC4', 'DOS Rebel', 'DWhistled', 'Dancing Font', 'Decimal', 'Def Leppard', 'Delta Corps Priest 1', 'Diamond', 'Diet Cola', 'Digital', 'Doh', 'Doom', 'Dot Matrix', 'Double Shorts', 'Double', 'Dr Pepper', 'Efti Chess', 'Efti Font', 'Efti Italic', 'Efti Piti', 'Efti Robot', 'Efti Wall', 'Efti Water', 'Electronic', 'Elite', 'Epic', 'Fender', 'Filter', 'Fire Font-k', 'Fire Font-s', 'Flipped', 'Flower Power', 'Four Tops', 'Fraktur', 'Fun Face', 'Fun Faces', 'Fuzzy', 'Georgi16', 'Georgia11', 'Ghost', 'Ghoulish', 'Glenyn', 'Goofy', 'Gothic', 'Graceful', 'Gradient', 'Graffiti', 'Greek', 'Heart Left', 'Heart Right', 'Henry 3D', 'Hex', 'Hieroglyphs', 'Hollywood', 'Horizontal Left', 'Horizontal Right', 'ICL-1900', 'Impossible', 'Invita', 'Isometric1', 'Isometric2', 'Isometric3', 'Isometric4', 'Italic', 'Ivrit', 'JS Block Letters', 'JS Bracket Letters', 'JS Capital Curves', 'JS Cursive', 'JS Stick Letters', 'Jacky', 'Jazmine', 'Jerusalem', 'Katakana', 'Kban', 'Keyboard', 'Knob', 'Konto Slant', 'Konto', 'LCD', 'Larry 3D 2', 'Larry 3D', 'Lean', 'Letters', 'Lil Devil', 'Line Blocks', 'Linux', 'Lockergnome', 'Madrid', 'Marquee', 'Maxfour', 'Merlin1', 'Merlin2', 'Mike', 'Mini', 'Mirror', 'Mnemonic', 'Modular', 'Morse', 'Morse2', 'Moscow', 'Mshebrew210', 'Muzzle', 'NScript', 'NT Greek', 'NV Script', 'Nancyj-Fancy', 'Nancyj-Improved', 'Nancyj-Underlined', 'Nancyj', 'Nipples', 'O8', 'OS2', 'Octal', 'Ogre', 'Old Banner', 'Patorjk\'s Cheese', 'Patorjk-HeX', 'Pawp', 'Peaks Slant', 'Peaks', 'Pebbles', 'Pepper', 'Poison', 'Puffy', 'Puzzle', 'Pyramid', 'Rammstein', 'Rectangles', 'Red Phoenix', 'Relief', 'Relief2', 'Reverse', 'Roman', 'Rot13', 'Rot13', 'Rotated', 'Rounded', 'Rowan Cap', 'Rozzo', 'Runic', 'Runyc', 'S Blood', 'SL Script', 'Santa Clara', 'Script', 'Serifcap', 'Shadow', 'Shimrod', 'Short', 'Slant Relief', 'Slant', 'Slide', 'Small Caps', 'Small Isometric1', 'Small Keyboard', 'Small Poison', 'Small Script', 'Small Shadow', 'Small Slant', 'Small Tengwar', 'Small', 'Soft', 'Speed', 'Spliff', 'Stacey', 'Stampate', 'Stampatello', 'Standard', 'Star Strips', 'Star Wars', 'Stellar', 'Stforek', 'Stick Letters', 'Stop', 'Straight', 'Stronger Than All', 'Sub-Zero', 'Swamp Land', 'Swan', 'Sweet', 'THIS', 'Tanja', 'Tengwar', 'Term', 'Test1', 'The Edge', 'Thick', 'Thin', 'Thorned', 'Three Point', 'Ticks Slant', 'Ticks', 'Tiles', 'Tinker-Toy', 'Tombstone', 'Train', 'Trek', 'Tsalagi', 'Tubular', 'Twisted', 'Two Point', 'USA Flag', 'Univers', 'Varsity', 'Wavy', 'Weird', 'Wet Letter', 'Whimsy', 'Wow'];
 </script>
 
 <template>
@@ -60,7 +80,7 @@ const fonts = ['1Row', '3-D', '3D Diagonal', '3D-ASCII', '3x5', '4Max', '5 Line 
           v-model:value="font"
           label-position="top"
           label="Font:"
-          :options="fonts"
+          :options="fontNames"
           searchable
           placeholder="Select font to use"
         />
@@ -79,11 +99,16 @@ const fonts = ['1Row', '3-D', '3D Diagonal', '3D-ASCII', '3x5', '4Max', '5 Line 
       <span class="ml-2">Loading font...</span>
     </div>
 
-    <c-alert v-if="errored" mt-1 text-center type="error">
-      Current settings resulted in error.
+    <c-alert v-else-if="error" mt-1 text-center type="error">
+      {{ error }}
+      <div v-if="downloadFailed" mt-3>
+        <c-button @click="reloadPage">
+          Reload page
+        </c-button>
+      </div>
     </c-alert>
 
-    <n-form-item v-if="!processing && !errored" label="Ascii Art text:">
+    <n-form-item v-else label="Ascii Art text:">
       <TextareaCopyable
         :value="output"
         mb-1 mt-1
