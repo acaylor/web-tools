@@ -1,12 +1,24 @@
+import { readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
 import figlet from 'figlet';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_FONT, FontLoadError, fontNames, isFontLoaded, loadFont } from './figlet-fonts';
 
+function listInstalledFonts() {
+  const fontsDir = dirname(createRequire(import.meta.url).resolve('figlet/fonts/Standard'));
+
+  return readdirSync(fontsDir)
+    .filter(file => file.endsWith('.js'))
+    .map(file => file.slice(0, -'.js'.length));
+}
+
 describe('figlet-fonts', () => {
-  it('lists every installed font once, sorted, including the default', () => {
-    expect(fontNames).toContain(DEFAULT_FONT);
-    expect(fontNames).toContain('Banner3');
-    expect(new Set(fontNames).size).toBe(fontNames.length);
+  it('lists exactly the fonts installed with figlet, once each, sorted', () => {
+    const installedFonts = listInstalledFonts();
+
+    expect(installedFonts.length).toBeGreaterThan(300);
+    expect([...fontNames].sort()).toEqual(installedFonts.sort());
     expect(fontNames).toEqual([...fontNames].sort((a, b) => a.localeCompare(b)));
   });
 

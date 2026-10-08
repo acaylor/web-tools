@@ -7,6 +7,8 @@ test.use({ serviceWorkers: 'block' });
 
 const INPUT = 'Ascii ART';
 
+type TestWindow = Window & { banner3Settled?: Promise<void> };
+
 function render(font: string) {
   return figlet.textSync(INPUT, { font, width: 80, whitespaceBreak: true });
 }
@@ -63,11 +65,22 @@ test.describe('Tool - ASCII text drawer', () => {
   test('A slow font that finishes late does not overwrite a newer selection', async ({ page }) => {
     let releaseBanner3!: () => void;
     const banner3Released = new Promise<void>(resolve => releaseBanner3 = resolve);
-    const banner3Served = page.waitForResponse(response => response.url().includes('/figlet-fonts/Banner3-'));
 
+    // Resolves one task after the late Banner3 module has executed, by which time
+    // every microtask it queued (font registration, the superseded watcher run and
+    // Vue's re-render) has settled.
+    await page.addInitScript(() => {
+      (window as TestWindow).banner3Settled = new Promise(resolve =>
+        window.addEventListener('banner3-evaluated', () => setTimeout(resolve, 0), { once: true }));
+    });
+
+    // Hold Banner3 back, then serve its whole body at once, tagged so the test
+    // knows when the module has run.
     await page.route('**/figlet-fonts/Banner3-*.js', async (route) => {
+      const response = await route.fetch();
+      const body = `${await response.text()}\nwindow.dispatchEvent(new Event('banner3-evaluated'));`;
       await banner3Released;
-      await route.continue();
+      await route.fulfill({ response, body });
     });
 
     await page.goto('/ascii-text-drawer');
@@ -79,14 +92,14 @@ test.describe('Tool - ASCII text drawer', () => {
     await expectArt(page, 'Slant');
 
     releaseBanner3();
-    await banner3Served;
+    await page.evaluate(() => (window as TestWindow).banner3Settled);
 
     await expect(page.getByText('Loading font...')).toBeHidden();
     await expect(page.locator('.c-alert')).toBeHidden();
-    await expectArt(page, 'Slant');
+    expect(await output(page).textContent()).toBe(render('Slant'));
   });
 
-  test('Offline, already-downloaded fonts still render and others explain why they cannot', async ({ page, context }) => {
+  test('Offline, downloaded fonts still render and others explain why, then recover after a reload', async ({ page, context }) => {
     await page.goto('/ascii-text-drawer');
     await selectFont(page, 'Banner3');
     await expectArt(page, 'Banner3');
@@ -101,5 +114,15 @@ test.describe('Tool - ASCII text drawer', () => {
 
     await selectFont(page, 'Standard');
     await expectArt(page, 'Standard');
+
+    await selectFont(page, 'Slant');
+    await expect(page.getByText('Could not download the "Slant" font.')).toBeVisible();
+
+    // Some browsers remember the failed import until the page reloads, so the
+    // error offers a reload; the selected font is restored from storage.
+    await context.setOffline(false);
+    await page.getByRole('button', { name: 'Reload page' }).click();
+
+    await expectArt(page, 'Slant');
   });
 });

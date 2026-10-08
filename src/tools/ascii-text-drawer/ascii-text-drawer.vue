@@ -8,7 +8,12 @@ const font = useStorage('ascii-text-drawer:font', DEFAULT_FONT);
 const width = useStorage('ascii-text-drawer:width', 80);
 const output = ref('');
 const error = ref<string | null>(null);
+const downloadFailed = ref(false);
 const processing = ref(false);
+
+function reloadPage() {
+  window.location.reload();
+}
 
 watchEffect(async (onCleanup) => {
   // Read reactive deps synchronously so the effect tracks them across the await.
@@ -34,14 +39,18 @@ watchEffect(async (onCleanup) => {
 
     output.value = figlet.textSync(text, { font: fontName, width: maxWidth, whitespaceBreak: true });
     error.value = null;
+    downloadFailed.value = false;
   }
   catch (e) {
     if (stale) {
       return;
     }
 
-    error.value = e instanceof FontLoadError
-      ? `Could not download the "${fontName}" font. Fonts are downloaded on first use, so check your connection, or pick a font you have used before.`
+    // Some browsers (e.g. Chromium) remember a failed dynamic import for the
+    // rest of the page's life, so a download can only be retried by reloading.
+    downloadFailed.value = e instanceof FontLoadError;
+    error.value = downloadFailed.value
+      ? `Could not download the "${fontName}" font. Fonts are downloaded on first use: check your connection and reload the page, or pick a font you have used before.`
       : 'Current settings resulted in error.';
   }
   finally {
@@ -92,6 +101,11 @@ watchEffect(async (onCleanup) => {
 
     <c-alert v-else-if="error" mt-1 text-center type="error">
       {{ error }}
+      <div v-if="downloadFailed" mt-3>
+        <c-button @click="reloadPage">
+          Reload page
+        </c-button>
+      </div>
     </c-alert>
 
     <n-form-item v-else label="Ascii Art text:">
